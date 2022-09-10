@@ -307,5 +307,8 @@ files:
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/10594#comment
-status: Failed
-record: -1
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Sat, 10 Sep 2022 11:51:23 UTC
+record: 1

@@ -22,9 +22,11 @@ public class GameController {
 
         for (Ships ship:Ships.values()) {
             table.showTable();
+            System.out.println();
             do{
-                fullQuestion = templateQuestion + ship +" ("+ship.getShipSize()+" cells):";
+                fullQuestion = templateQuestion + (ship.name().equals("AircraftCarrier")?"Aircraft Carrier":ship) +" ("+ship.getShipSize()+" cells):";
                 userInput = Asker.userInput(fullQuestion); //ha false újrakérdez
+                System.out.println();
                 battleship = new Battleship(ship,'X');
                 validating = new Validating(userInput, battleship,table);
                 validateStr = validating.validateAll();
@@ -32,10 +34,10 @@ public class GameController {
             }while (!validateStr.equals("OK"));
 
             table.addBattleShip(validating.getInput(),battleship);
-//            table.showTable();
+
         }
 
-
+        table.showTable();
     }
 
 

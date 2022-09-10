@@ -450,6 +450,918 @@ files:
         }
     }
   learner_created: false
+- name: src/battleship/Asker.java
+  visible: true
+  text: |
+    package battleship;
+
+    import java.util.Scanner;
+
+    public final class Asker {
+    //
+    //    String question;
+    //    boolean ok;
+    //
+    //    public Asker(String question, boolean ok) {
+    //        this.question = question;
+    //        this.ok = ok;
+    //    }
+
+        static String userInput(String question){
+
+            Scanner scanner = new Scanner(System.in);
+            String input="";
+            System.out.println(question);
+            return scanner.nextLine();
+
+        }
+
+    }
+  learner_created: true
+- name: src/battleship/Ships.java
+  visible: true
+  text: |
+    package battleship;
+
+    public enum Ships {
+        AircraftCarrier(5),
+        Battleship(4),
+        Submarine(3),
+        Cruiser(3),
+        Destroyer(2);
+
+
+        private final int shipSize;
+
+        Ships(int shipSize) {
+            this.shipSize = shipSize;
+        }
+
+        public int getShipSize() {
+            return shipSize;
+        }
+    }
+  learner_created: true
+- name: src/battleship/GameController.java
+  visible: true
+  text: |
+    package battleship;
+
+    public class GameController {
+
+        public static void start(){
+            String templateQuestion = "Enter the coordinates of the ";
+            String fullQuestion = "";
+            String userInput = "";
+            String validateStr=" ";
+
+            Validating validating = new Validating();
+            Battleship [] battleships = new Battleship[5];
+            Battleship battleship;
+            Table table = new Table(10,10);
+    //        int[] startCoord = new int[]{9, 0};
+    //        ArrayMove arrayMove = new ArrayMove(table.getTable(),startCoord);
+    //        System.out.println(arrayMove.move("DOWN"));
+    ////        arrayMove.move("RIGHT");
+    //
+    //
+    //        System.out.println(arrayMove);
+
+            for (Ships ship:Ships.values()) {
+                table.showTable();
+                System.out.println();
+                do{
+                    fullQuestion = templateQuestion + (ship.name().equals("AircraftCarrier")?"Aircraft Carrier":ship) +" ("+ship.getShipSize()+" cells):";
+                    userInput = Asker.userInput(fullQuestion); //ha false újrakérdez
+                    System.out.println();
+                    battleship = new Battleship(ship,'X');
+                    validating = new Validating(userInput, battleship,table);
+                    validateStr = validating.validateAll();
+                    if(!validateStr.equals("OK")) System.out.println(validateStr+"\n");
+                }while (!validateStr.equals("OK"));
+
+                table.addBattleShip(validating.getInput(),battleship);
+
+            }
+
+            table.showTable();
+        }
+
+
+    }
+  learner_created: true
+- name: src/battleship/Table.java
+  visible: true
+  text: |
+    package battleship;
+
+    import java.util.Arrays;
+
+    public class Table {
+
+
+        public String[][] getTable() {
+            return table;
+        }
+
+        private String[][] table;
+        private TableSymbols denote; // '~','M','X'..
+
+        boolean row = false;
+
+    //    @Override
+    //    public String toString() {
+    //        return table[0][];
+    //    }
+
+        boolean column = false;
+
+        public Table(int sizeX, int sizeY) {
+            this.table = new String[sizeX][sizeY];
+            initTable();
+    //        inputValidation("A1 A5");
+    //        addBattleShip("A2 A6",denote);
+
+
+        }
+
+        public void showTable() {
+            header(this.table[0].length);
+            body();
+        }
+
+        private void header(int number) {
+            System.out.print("  ");
+            for (int i = 1; i <= number; i++) {
+                System.out.print(" " + i);
+            }
+            System.out.println();
+        }
+
+        private void body() {
+            for (int i = 0; i < this.table.length; i++) {
+                System.out.print(" " + ((char) (i + 65)));
+                for (int j = 0; j < table[0].length; j++) {
+                    System.out.print(" " + table[i][j]);
+                }
+                System.out.println();
+            }
+
+        }
+
+        private void initTable() {
+            for (int i = 0; i < table.length; i++) {
+                for (int j = 0; j < table[0].length; j++) {
+                    table[i][j] = TableSymbols.UNTOUCHED.getSymbol();
+                }
+            }
+        }
+
+        protected void addBattleShip(String coordinate, Battleship battleship) {
+            // F3 F7 koordináta leképzése
+            // sor - egyezik az 1.char
+            // oszlop - egyezik a 2.char
+            //amelyik nem egyezik az meg növekszik
+            // 1.char-t átalakítani tömbös indexé, int rowNumber = (char) 'A'-65;
+            // 2.dim tömbbe eltárolni a hajó koordinátáit (Battleship-ben is van ilyen, setCoordinate?)
+
+            String[] coordinates = coordinate.split(" ");
+            int rowSecNum = Integer.parseInt(coordinates[0].substring(1, 2));
+
+            int range = coordinates[0].length() == 2?2:3; //because of F9 F10 +char
+            int rowFirstNum = Integer.parseInt(coordinates[0].substring(1, range));
+
+            row = coordinates[0].substring(0, 1).equals(coordinates[1].substring(0, 1));
+            column = coordinates[0].substring(1, 2).equals(coordinates[1].substring(1, 2));
+            int rowNumber = 0;
+            int columnNumber = 0;
+    //        rowNumber = (char) 'A'-65;
+            rowNumber = getArrayIndexFromChar(coordinates[0].charAt(0));
+            columnNumber = getArrayIndexFromChar(coordinates[0].charAt(0));
+
+            int[][] shipCoordinate = new int[battleship.getSize()][2];
+            int index = rowSecNum;
+            if (row) {
+
+                for (int i = 0; i < shipCoordinate.length; i++) {
+                    shipCoordinate[i][1] = index++;
+                    shipCoordinate[i][0] = rowNumber;
+
+                }
+
+            } else if (column) {
+                for (int i = 0; i < shipCoordinate.length; i++) {
+                    shipCoordinate[i][0] = rowNumber++;
+                    shipCoordinate[i][1] = rowFirstNum;
+
+                }
+            }
+
+    //        for (int[] items: shipCoordinate) {
+    //            for (int item:items) {
+    //                System.out.print(item + " ");
+    //            }
+    //            System.out.println();
+    //        }
+
+            //save and update table array
+            battleship.setCoordinates(shipCoordinate);
+            modifyTableCoordinate(battleship);
+
+    //        for (int i = 0; i < table.length; i++) {
+    //            for (int j = 0; j < table[0].length; j++) {
+    //                table[i][j] = denote.UNTOUCHED.getSymbol();
+    //            }
+    //        }
+        }
+
+        private int getArrayIndexFromChar(char character) {
+            return character - 65;
+        }
+
+
+    //    private void setCoordinateToTable() {
+    //        int[][] shipCoordinate = battleship.getCoordinates();
+    //        for (int i = 0; i < shipCoordinate.length; i++) {
+    //            for (int j = 0; j < shipCoordinate.length; j++) {
+    //
+    ////                shipCoordinate[i][j] = table[i][j];
+    //
+    //            }
+    //        }
+    //    }
+
+        protected void modifyTableCoordinate(Battleship battleship) {
+            int[][] shipCoordinate = battleship.getCoordinates();
+
+    //        table[][] = shipCoordinate[][]
+
+            for (int i = 0; i < shipCoordinate.length; i++) {
+                for (int j = 0; j < shipCoordinate.length; j++) {
+    //                System.out.println(shipCoordinate[i][0] + " - " + shipCoordinate[i][1]);
+                    table[shipCoordinate[i][0]][shipCoordinate[i][1]-1] = "O";
+                }
+
+            }
+        }
+
+        protected boolean inputValidation(String input){
+
+    //        System.out.println("B10 B10".matches("([A-J]([1-9)]|10))\s([A-J]([1-9]|10))"));
+            String regExp = "([A-J]([1-9)]|10))\s([A-J]([1-9]|10))";
+            boolean inputVal = input.matches(regExp);
+            if(inputVal){
+
+                String [] coord = input.split(" ");
+                String startCoord   = coord[0];
+                String endCoord   = coord[1];
+                int x1 = getArrayIndexFromChar(startCoord.charAt(0));
+                int y1 = Integer.parseInt(String.valueOf(startCoord.charAt(1)));
+
+                int x2 = getArrayIndexFromChar(endCoord.charAt(0));
+                int y2 = Integer.parseInt(String.valueOf(endCoord.charAt(1)));
+
+    //            System.out.println(x1+" "+y1+" "+x2+" "+y2);
+
+                //tartomány ellenőrzés sor ill oszlop esetén
+    //            System.out.println("Order: " + getProperOrderInput(input));
+            } else if (inputVal && !row && !column) {
+                System.out.println("Error! Wrong ship location! Try again:");
+            }
+
+            return false;
+        }
+        protected String getProperOrderInput(String input){
+
+            String [] coord = input.split(" ");
+            String startCoord   = coord[0];
+            String endCoord   = coord[1];
+
+            String orderedInput="";
+            int startCoorNum=Integer.parseInt(startCoord.substring(1,2));
+            int endCoorNum=Integer.parseInt(endCoord.substring(1,2));
+
+            int startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));
+            int endColumnNum = getArrayIndexFromChar(endCoord.charAt(0));
+
+            if(row && (endCoorNum<startCoorNum)){
+                orderedInput = endCoord +" "+startCoord;
+            }else if(column && (endColumnNum<startColumnNum)) {
+                orderedInput = endCoord +" "+startCoord;
+            }else {
+                orderedInput = input;
+            }
+            return orderedInput;
+        }
+
+        protected int lengthOfGivenCoordinate(String input){
+            int sum=0;
+            String orderedInput=getProperOrderInput(input);
+
+            String [] coord = orderedInput.split(" ");
+            String startCoord   = coord[0];
+            String endCoord   = coord[1];
+
+
+            int startCoorNum=Integer.parseInt(startCoord.substring(1,2));
+            int endCoorNum=Integer.parseInt(endCoord.substring(1,2));
+
+            int startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));
+            int endColumnNum = getArrayIndexFromChar(endCoord.charAt(0));
+
+            if(row){
+                sum = endCoorNum - startCoorNum;
+            }
+            else if(column){
+                sum = endColumnNum - startColumnNum;
+            }
+            return sum+1;
+        }
+        public boolean isRow() {
+            return row;
+        }
+
+        public boolean isColumn() {
+            return column;
+        }
+
+    }
+  learner_created: true
+- name: src/battleship/Validating.java
+  visible: true
+  text: |
+    package battleship;
+
+    public class Validating {
+
+        public String getInput() {
+            return input;
+        }
+
+        private String input;
+        private Battleship battleship;
+        private Table table;
+
+        boolean row = false;
+        boolean column = false;
+
+        public Validating(String input, Battleship battleship, Table table) {
+            this.battleship = battleship;
+            this.table = table;
+            this.input = input;
+            setProperOrderInput();
+        }
+
+        public Validating() {
+
+        }
+
+        public String getValidateStr() {
+            return validateStr;
+        }
+
+        String validateStr = "OK";
+
+        private void sizeCheck() {
+            if (lengthOfGivenCoordinate() != battleship.getSize()) validateStr = "Error! Wrong length of the " + battleship.getName()+"! Try again:";
+        }
+
+        private void rowColumnCheck() {
+            if (!row && !column) validateStr = "Error! Wrong ship location! Try again:";
+        }
+
+        private void arrangeCheck() {
+            if(isShipAround())
+            validateStr = "Error! You placed it too close to another one. Try again:";
+
+        }
+
+        private void setProperOrderInput() {
+            String[] coord = input.split(" ");
+            String startCoord = coord[0];
+            String endCoord = coord[1];
+
+            int rangeFirstPart = coord[0].length() == 2?2:3; //because of F9 F10 +char
+            int rangeSecondPart = coord[1].length() == 2?2:3; //because of F9 F10 +char
+
+            row = coord[0].substring(0, 1).equals(coord[1].substring(0, 1));
+            column = coord[0].substring(1, rangeFirstPart).equals(coord[1].substring(1, rangeSecondPart));
+
+            String orderedInput = "";
+            int startCoorNum = Integer.parseInt(startCoord.substring(1, rangeFirstPart));
+            int endCoorNum = Integer.parseInt(endCoord.substring(1, rangeSecondPart));
+
+            int startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));
+            int endColumnNum = getArrayIndexFromChar(endCoord.charAt(0));
+
+            if (row && (endCoorNum < startCoorNum)) {
+                orderedInput = endCoord + " " + startCoord;
+            } else if (column && (endColumnNum < startColumnNum)) {
+                orderedInput = endCoord + " " + startCoord;
+            } else {
+                orderedInput = input;
+            }
+            this.input = orderedInput;
+        }
+
+        private int getArrayIndexFromChar(char character) {
+            return character - 65;
+        }
+
+        public String validateAll() {
+            setProperOrderInput();
+            sizeCheck();
+            rowColumnCheck();
+            arrangeCheck();
+            return validateStr;
+        }
+
+
+        private int lengthOfGivenCoordinate() {
+            int sum = 0;
+
+            String[] coord = this.input.split(" ");
+            String startCoord = coord[0];
+            String endCoord = coord[1];
+
+            int rangeFirstPart = coord[0].length() == 2?2:3; //because of F9 F10 +char
+            int rangeSecondPart = coord[1].length() == 2?2:3; //because of F9 F10 +char
+
+            int startCoorNum = Integer.parseInt(startCoord.substring(1, rangeFirstPart));
+            int endCoorNum = Integer.parseInt(endCoord.substring(1, rangeSecondPart));
+
+            int startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));
+            int endColumnNum = getArrayIndexFromChar(endCoord.charAt(0));
+
+            if (row) {
+                sum = endCoorNum - startCoorNum;
+            } else if (column) {
+                sum = endColumnNum - startColumnNum;
+            }
+            return sum + 1;
+        }
+
+        private boolean isShipAround(){
+
+            String[] coord = this.input.split(" ");
+            String startCoord = coord[0];
+            String endCoord = coord[1];
+
+            int startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));
+            int endColumnNum = getArrayIndexFromChar(endCoord.charAt(0));
+
+            int rangeFirstPart = coord[0].length() == 2?2:3; //because of F9 F10 +char
+            int rangeSecondPart = coord[1].length() == 2?2:3; //because of F9 F10 +char
+
+            int firstNumber = Integer.parseInt(coord[0].substring(1,rangeFirstPart));
+            int secondNumber = Integer.parseInt(coord[1].substring(1,rangeSecondPart));
+
+            int [] start = {startColumnNum,firstNumber-1};
+            int [] newcoord = new int[2];
+            ArrayMove arrayMove = new ArrayMove(table.getTable(), start);
+
+
+            boolean up=false;
+            boolean down=false;
+            boolean right = false;
+            boolean left = false;
+            boolean actualColumn = false;
+    //        System.out.println(firstNumber + " - " + secondNumber);
+            //upper
+    //        if(row && (firstNumber<table.getTable()[0].length && secondNumber<table.getTable()[0].length)){
+    ////        if(row){
+    //// -1 elcsúsztatás és kell még -1 hogy az előtte való mezőt is nézzem ezért -2
+    //            for(int i = firstNumber-2;i<secondNumber+1;i++){
+    //
+    //                down = table.getTable()[startColumnNum+1][i].equals("O");
+    //                up = table.getTable()[startColumnNum-1][i].equals("O");
+    //
+    //            }
+    //        } else if (column && (firstNumber<table.getTable().length && secondNumber<table.getTable().length)) {
+    ////        } else if (column) {
+    //            for(int i = startColumnNum-1;i<endColumnNum+1;i++){
+    //                left = table.getTable()[i][startColumnNum-1].equals("O");
+    //                right = table.getTable()[i][startColumnNum+1].equals("O");
+    //            }
+    //
+    //        }
+    ////        System.out.println(up+" - "+down+" - "+right+" - "+left);
+
+            if(row){
+    //            if(arrayMove.move("LEFT")){
+    //                System.out.println("returnCoord " + arrayMove);
+    //                for(int i = arrayMove.returnCoordinate[0]-1;i<arrayMove.returnCoordinate[0]+2;i++){
+    //                    System.out.println("TABLE: " + arrayMove + "i - " + i);
+    //                    if(table.getTable()[i][arrayMove.returnCoordinate[0]].equals("O")){
+    //                        left = true;
+    //                        break;
+    //                    }
+    //                }
+    //            }
+
+    //
+                if(arrayMove.move("UP")){
+                    up = hasZeroInRow(arrayMove.getReturnCoordinate(), battleship.getSize());
+    //                System.out.println("UP: " + arrayMove);
+
+                }
+                if(arrayMove.move("LEFT")){
+                    left = hasZeroInRow(arrayMove.getReturnCoordinate(), battleship.getSize());
+    //                System.out.println("LEFT: " + arrayMove);
+                }
+
+    //            if(arrayMove.move("DOWN")){
+    //                down = hasZeroInRow(arrayMove.getReturnCoordinate(), battleship.getSize());
+    //
+    //            }
+            } else if (column) {
+    //            System.out.println("Column coord: " + arrayMove);
+                if(arrayMove.move("UP")){
+                    up = hasZeroInColumn(arrayMove.getReturnCoordinate(), battleship.getSize());
+    //                System.out.println("C_UP: " + arrayMove);
+
+                }
+                if(arrayMove.move("LEFT")){
+                    left = hasZeroInColumn(arrayMove.getReturnCoordinate(), battleship.getSize());
+    //                System.out.println("C_LEFT: " + arrayMove);
+
+
+                }
+                if(arrayMove.move("DOWN") && arrayMove.move("DOWN")){
+                    down = hasZeroInColumn(arrayMove.getReturnCoordinate(), battleship.getSize());
+    //                System.out.println("C_DOWNDOWN: " + arrayMove);
+
+                }
+    //            arrayMove.move("LEFT");
+    //                actualColumn = hasZeroInColumn(arrayMove.getReturnCoordinate(), battleship.getSize());
+
+
+            }
+    //        System.out.println("Ship around: " + up +" " + right + " " + left + " "+down);
+
+            return up || down || left ||  right;
+
+
+        }
+
+        private boolean hasZeroInRow(int[] coord, int battleshipSize){
+            int rowNumber = coord[0]+1;
+            int colNum = coord[1]-1;
+            int start = colNum;
+            int end=9;
+
+    //        if(start+battleshipSize<9){
+    //            end = start+battleshipSize+1;
+    //        }else{
+    //            end = start+battleshipSize;
+    //        }
+            if(start+battleshipSize<9){
+                end = start+battleshipSize+1;
+            }else if(rowNumber < 9) {
+                end = start+battleshipSize;
+            }
+            if (start < 0) {
+                start = 0;
+            }
+    //        System.out.println("hasZeroInColumn: \n"+
+    //                "rowNumber: " + rowNumber+
+    //                " colNum: " + colNum+
+    //                " start: " + start+
+    //                " end: " + end);
+    //        System.out.println("hasZeroInRow: " + rowNumber + " - " + colNum);
+            for (int i=start;i<end;i++){
+    //            System.out.println("TABLE - " + table.getTable()[rowNumber][i]);
+
+                if(table.getTable()[rowNumber][i].equals("O")){
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private boolean hasZeroInColumn(int[] coord, int battleshipSize){
+            int rowNumber = coord[0];
+            int colNum = coord[1];
+            int start = rowNumber;
+            int end=9;
+
+            if(start+battleshipSize<9){
+                end = start+battleshipSize+1;
+            }else if(rowNumber < 9) {
+                end = start+battleshipSize;
+            } else if (rowNumber > 9) {
+                end = 9;
+            }
+
+    //        System.out.println("hasZeroInColumn: \n"+
+    //                "rowNumber: " + rowNumber+
+    //                " colNum: " + colNum+
+    //                " start: " + start+
+    //                " end: " + end);
+
+    //        for (int i=colNumber;i<colNumber+battleshipSize-1;i++){
+    //            System.out.println("C_TABLE - " + table.getTable()[i][rowNumber]);
+    //            System.out.println("############## "+i+" #############");
+    //            if(table.getTable()[i][rowNumber].equals("O")){
+    ////            if(table.getTable()[1][2].equals("O")){
+    //                System.out.println("PAFF");
+    //                return true;
+    //            }
+    //        }
+    //        System.out.println("END - "+end);
+            for (int i=start;i<end;i++){
+    //            System.out.println("########## " + i + " ############");
+    //            System.out.println("TABLE - " + i +" ----> " +colNum + table.getTable()[i][colNum]);
+                if(table.getTable()[i][colNum].equals("O")){
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
+
+    }
+  learner_created: true
+- name: src/battleship/ArrayMove.java
+  visible: true
+  text: |
+    package battleship;
+
+    public class ArrayMove {
+
+
+
+        int [] returnCoordinate = new int[2];
+        String [][] arrayName;
+        int [] startCoord;
+        boolean isInRange;
+        int minColumnNum;
+        int maxColumnNum;
+        int minRowNum;
+        int maxRowNum;
+
+        public ArrayMove(String [][] arrayName, int [] startCoord) {
+            this.arrayName = arrayName;
+            this.startCoord = startCoord;
+            returnCoordinate = startCoord;
+
+            minColumnNum = 0;
+            maxColumnNum = arrayName.length;
+            minRowNum = 0;
+            maxRowNum = arrayName[0].length;
+
+        }
+
+        //direction - UP DOWN LEFT RIGHT
+    //    public int [] move(String direction){
+        public boolean move(String direction){
+    //        isMoveToTheNextDirection(direction); //can we move to the particular direction? set boolean var
+
+            if(isMoveToTheNextDirection(direction)){
+                switch (direction) {
+                    case "UP":
+                        up();
+                        break;
+                    case "DOWN":
+                        down();
+                        break;
+                    case "RIGHT":
+                        right();
+                        break;
+                    case "LEFT":
+                        left();
+                        break;
+                }
+            }
+
+
+            return isMoveToTheNextDirection(direction);
+
+
+        }
+
+
+        boolean isMoveToTheNextDirection(String direction){
+
+            switch (direction){
+                case "UP":
+                    isUp();
+                    break;
+                case "DOWN":
+                    isDown();
+                    break;
+                case "RIGHT":
+                    isRight();
+                    break;
+                case "LEFT":
+                    isLeft();
+                    break;
+    //            default:
+
+            }
+            return isInRange;
+        }
+
+        private void isLeft() {
+    //        isInRange=startCoord[1]>0;
+            isInRange=returnCoordinate[1]>minRowNum;
+
+        }
+
+        private void isRight() {
+
+    //        isInRange=startCoord[1]<10;
+            isInRange=returnCoordinate[1]<maxRowNum;
+        }
+
+        private void isDown() {
+
+    //        isInRange=arrayName.length>arrayName.length-1;
+            isInRange=returnCoordinate[0]<maxColumnNum;
+        }
+
+        private void isUp() {
+            isInRange=returnCoordinate[0]>minColumnNum;
+        }
+
+
+        private void left() {
+            if(isInRange){
+                returnCoordinate[0] = startCoord[0];
+                returnCoordinate[1] = startCoord[1]-1;
+
+            }
+        }
+
+        private void right() {
+            if(isInRange){
+                returnCoordinate[0] = startCoord[0];
+                returnCoordinate[1] = startCoord[1]+1;
+
+            }
+        }
+
+        private void down() {
+            if(isInRange){
+                returnCoordinate[0] = startCoord[0]+1;
+                returnCoordinate[1] = startCoord[1];
+
+            }
+        }
+
+        private void up() {
+            if(isInRange){
+                returnCoordinate[0] = startCoord[0]-1;
+                returnCoordinate[1] = startCoord[1];
+
+            }
+
+        }
+
+        public int[] getReturnCoordinate() {
+            return returnCoordinate;
+        }
+
+
+        private boolean checkNeighbor(String rowOrColumn){
+
+            //ha sor alsó felső sor ellenőrzése
+            //ha oszlop akkor jobb bal oszlop ellenőrzése
+
+    //        String[] coordinates = coordinate.split(" ");
+    //        int rowSecNum = Integer.parseInt(coordinates[0].substring(1, 2));
+    //
+    //        int range = coordinates[0].length() == 2?2:3; //because of F9 F10 +char
+    //        int rowFirstNum = Integer.parseInt(coordinates[0].substring(1, range));
+    //
+    //        row = coordinates[0].substring(0, 1).equals(coordinates[1].substring(0, 1));
+    //        column = coordinates[0].substring(1, 2).equals(coordinates[1].substring(1, 2));
+
+    //        if(row){
+    //
+    //        } else if (column) {
+    //
+    //        }
+
+
+            return false;
+        }
+
+
+
+        @Override
+        public String toString() {
+            return returnCoordinate[0] + "  " + returnCoordinate[1];
+        }
+    }
+  learner_created: true
+- name: src/battleship/TableSymbols.java
+  visible: true
+  text: |
+    package battleship;
+
+    public enum TableSymbols {
+        UNTOUCHED("~"), // ~
+        HIT("x"),       // x
+        MISS("m")       // m
+                ;
+
+        private final String symbol;
+
+        TableSymbols(String symbol) {
+            this.symbol = symbol;
+        }
+
+        public String getSymbol() {
+            return symbol;
+        }
+
+    }
+  learner_created: true
+- name: src/battleship/Battleship.java
+  visible: true
+  text: |
+    package battleship;
+
+    public class Battleship {
+
+        public String getName() {
+            return name;
+        }
+
+        private String name;
+        private int size; //cells number
+        private int coordinates[][];
+        private char denote; // 'O' char
+        private boolean isDestroyed;
+
+        private byte attackedNum; //melyik részét érte a támadás
+
+        public Battleship(Ships ship, char denote) {
+    //
+    //        switch (ship){
+    //            case AircraftCarrier:
+    //                this.size = 5;
+    //                break;
+    //            case Battleship:
+    //                this.size = 4;
+    //                break;
+    //            case Submarine:
+    //
+    //            case Cruiser:
+    //                this.size = 3;
+    //                break;
+    //
+    //            case Destroyer:
+    //                this.size = 2;
+    //                break;
+    //        }
+            this.size = ship.getShipSize();
+            this.denote = denote;
+            this.name = ship.name();
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+
+
+        public int[][] getCoordinates() {
+            return coordinates;
+        }
+
+        public void setCoordinates(int[][] coordinates) {
+            this.coordinates = coordinates;
+        }
+
+        public char getDenote() {
+            return denote;
+        }
+
+        public void setDenote(char denote) {
+            this.denote = denote;
+        }
+
+        public boolean isDestroyed() {
+
+            return isDestroyed;
+        }
+
+
+        public byte getAttackedNum() {
+            return attackedNum;
+        }
+
+        public void setAttacked() {
+            this.attackedNum += attackedNum;
+            isDestroyed = (this.attackedNum == this.size)?true:false;
+        }
+
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/10595#comment
 status: Unchecked
 record: -1

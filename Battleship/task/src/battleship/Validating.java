@@ -170,12 +170,12 @@ public class Validating {
 //
             if(arrayMove.move("UP")){
                 up = hasZeroInRow(arrayMove.getReturnCoordinate(), battleship.getSize());
-                System.out.println("UP: " + arrayMove);
+//                System.out.println("UP: " + arrayMove);
 
             }
             if(arrayMove.move("LEFT")){
                 left = hasZeroInRow(arrayMove.getReturnCoordinate(), battleship.getSize());
-                System.out.println("LEFT: " + arrayMove);
+//                System.out.println("LEFT: " + arrayMove);
             }
 
 //            if(arrayMove.move("DOWN")){
@@ -186,18 +186,18 @@ public class Validating {
 //            System.out.println("Column coord: " + arrayMove);
             if(arrayMove.move("UP")){
                 up = hasZeroInColumn(arrayMove.getReturnCoordinate(), battleship.getSize());
-                System.out.println("C_UP: " + arrayMove);
+//                System.out.println("C_UP: " + arrayMove);
 
             }
             if(arrayMove.move("LEFT")){
                 left = hasZeroInColumn(arrayMove.getReturnCoordinate(), battleship.getSize());
-                System.out.println("C_LEFT: " + arrayMove);
+//                System.out.println("C_LEFT: " + arrayMove);
 
 
             }
             if(arrayMove.move("DOWN") && arrayMove.move("DOWN")){
                 down = hasZeroInColumn(arrayMove.getReturnCoordinate(), battleship.getSize());
-                System.out.println("C_DOWNDOWN: " + arrayMove);
+//                System.out.println("C_DOWNDOWN: " + arrayMove);
 
             }
 //            arrayMove.move("LEFT");
@@ -205,7 +205,7 @@ public class Validating {
 
 
         }
-        System.out.println("Ship around: " + up +" " + right + " " + left + " "+down);
+//        System.out.println("Ship around: " + up +" " + right + " " + left + " "+down);
 
         return up || down || left ||  right;
 
@@ -216,15 +216,27 @@ public class Validating {
         int rowNumber = coord[0]+1;
         int colNum = coord[1]-1;
         int start = colNum;
-        int end;
+        int end=9;
 
+//        if(start+battleshipSize<9){
+//            end = start+battleshipSize+1;
+//        }else{
+//            end = start+battleshipSize;
+//        }
         if(start+battleshipSize<9){
             end = start+battleshipSize+1;
-        }else{
+        }else if(rowNumber < 9) {
             end = start+battleshipSize;
         }
-
-        System.out.println("hasZeroInRow: " + rowNumber + " - " + colNum);
+        if (start < 0) {
+            start = 0;
+        }
+//        System.out.println("hasZeroInColumn: \n"+
+//                "rowNumber: " + rowNumber+
+//                " colNum: " + colNum+
+//                " start: " + start+
+//                " end: " + end);
+//        System.out.println("hasZeroInRow: " + rowNumber + " - " + colNum);
         for (int i=start;i<end;i++){
 //            System.out.println("TABLE - " + table.getTable()[rowNumber][i]);
 
@@ -240,19 +252,21 @@ public class Validating {
         int rowNumber = coord[0];
         int colNum = coord[1];
         int start = rowNumber;
-        int end;
+        int end=9;
 
         if(start+battleshipSize<9){
             end = start+battleshipSize+1;
-        }else{
+        }else if(rowNumber < 9) {
             end = start+battleshipSize;
+        } else if (rowNumber > 9) {
+            end = 9;
         }
 
-        System.out.println("hasZeroInColumn: \n"+
-                "rowNumber: " + rowNumber+
-                " colNum: " + colNum+
-                " start: " + start+
-                " end: " + end);
+//        System.out.println("hasZeroInColumn: \n"+
+//                "rowNumber: " + rowNumber+
+//                " colNum: " + colNum+
+//                " start: " + start+
+//                " end: " + end);
 
 //        for (int i=colNumber;i<colNumber+battleshipSize-1;i++){
 //            System.out.println("C_TABLE - " + table.getTable()[i][rowNumber]);
@@ -265,8 +279,8 @@ public class Validating {
 //        }
 //        System.out.println("END - "+end);
         for (int i=start;i<end;i++){
-            System.out.println("########## " + i + " ############");
-            System.out.println("TABLE - " + i +" ----> " +colNum + table.getTable()[i][colNum]);
+//            System.out.println("########## " + i + " ############");
+//            System.out.println("TABLE - " + i +" ----> " +colNum + table.getTable()[i][colNum]);
             if(table.getTable()[i][colNum].equals("O")){
                 return true;
             }
