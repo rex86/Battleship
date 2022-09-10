@@ -12,14 +12,8 @@ public class GameController {
         Battleship [] battleships = new Battleship[5];
         Battleship battleship;
         Table table = new Table(10,10);
-//        int[] startCoord = new int[]{9, 0};
-//        ArrayMove arrayMove = new ArrayMove(table.getTable(),startCoord);
-//        System.out.println(arrayMove.move("DOWN"));
-////        arrayMove.move("RIGHT");
-//
-//
-//        System.out.println(arrayMove);
 
+        int i = 0;
         for (Ships ship:Ships.values()) {
             table.showTable();
             System.out.println();
@@ -31,6 +25,7 @@ public class GameController {
                 validating = new Validating(userInput, battleship,table);
                 validateStr = validating.validateAll();
                 if(!validateStr.equals("OK")) System.out.println(validateStr+"\n");
+                battleships[i++] = battleship;
             }while (!validateStr.equals("OK"));
 
             table.addBattleShip(validating.getInput(),battleship);
@@ -38,6 +33,9 @@ public class GameController {
         }
 
         table.showTable();
+        System.out.println("The game starts!\n");
+        table.showTable();
+        System.out.println(battleships);
     }
 
 

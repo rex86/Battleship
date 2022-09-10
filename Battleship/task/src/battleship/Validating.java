@@ -43,6 +43,10 @@ public class Validating {
         validateStr = "Error! You placed it too close to another one. Try again:";
 
     }
+    private void inputCheck(){
+        String regExp = "([A-J]([1-9)]|10))\s([A-J]([1-9]|10))";
+        if(!input.matches(regExp)) validateStr = "Error! You entered the wrong coordinates! Try again:";
+    }
 
     private void setProperOrderInput() {
         String[] coord = input.split(" ");
@@ -78,6 +82,7 @@ public class Validating {
 
     public String validateAll() {
         setProperOrderInput();
+        inputCheck();
         sizeCheck();
         rowColumnCheck();
         arrangeCheck();
