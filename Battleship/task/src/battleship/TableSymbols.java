@@ -2,8 +2,8 @@ package battleship;
 
 public enum TableSymbols {
     UNTOUCHED("~"), // ~
-    HIT("x"),       // x
-    MISS("m")       // m
+    HIT("X"),       // x
+    MISS("M")       // m
             ;
 
     private final String symbol;

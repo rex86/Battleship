@@ -230,4 +230,64 @@ public class Table {
         return column;
     }
 
+    public String changeTableMissOrHit(String input) {
+
+
+        int range = input.length() == 2 ? 2 : 3; //because of F9 F10 +char
+        int rowNumber = getArrayIndexFromChar(input.charAt(0));
+        int columnNum = Integer.parseInt(input.substring(1, range)) - 1;
+
+        boolean hit = table[rowNumber][columnNum].equals("O");
+        boolean miss = table[rowNumber][columnNum].equals("~");
+
+        String result="";
+
+        if (hit) {
+            table[rowNumber][columnNum] = TableSymbols.HIT.getSymbol();
+            result = "HIT";
+        } else if (miss) {
+            table[rowNumber][columnNum] = TableSymbols.MISS.getSymbol();
+            result = "MISS";
+        }
+//        System.out.println("RESULT: " + result);
+        return result;
+
+    }
+
+    protected void hideTable() {
+        header(this.table[0].length);
+        for (int i = 0; i < this.table.length; i++) {
+            System.out.print(" " + ((char) (i + 65)));
+            for (int j = 0; j < table[0].length; j++) {
+                if(table[i][j].equals("O")){
+                    System.out.print(" " + TableSymbols.UNTOUCHED.getSymbol());
+
+                }else{
+                    System.out.print(" "+table[i][j]);
+                }
+
+            }
+            System.out.println();
+        }
+
+    }
+    
+    protected Battleship getBattleshipByCoord(Battleship[] battleships, String coord){
+
+        int range = coord.length() == 2 ? 2 : 3; //because of F9 F10 +char
+        int rowNumber = getArrayIndexFromChar(coord.charAt(0));
+        int columnNum = Integer.parseInt(coord.substring(1, range));
+        Battleship hasShip;
+        for (Battleship battleship:battleships) {
+            for (int[] item :battleship.getCoordinates()) {
+//                System.out.println("INNER item: "+item[0] + " - " + item[1] +"-->"+rowNumber + " - " + columnNum );
+                if(item[0] == rowNumber && item[1] == columnNum){
+//                    System.out.println("getBsByCoord: " + battleship.getName());
+                    return battleship;
+                }
+            }
+
+        }
+        return null;
+    }
 }

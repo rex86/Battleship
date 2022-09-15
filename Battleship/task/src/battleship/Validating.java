@@ -44,10 +44,23 @@ public class Validating {
 
     }
     private void inputCheck(){
-        String regExp = "([A-J]([1-9)]|10))\s([A-J]([1-9]|10))";
-        if(!input.matches(regExp)) validateStr = "Error! You entered the wrong coordinates! Try again:";
+        String regExp1 = "([A-J]([1-9)]|10))\s([A-J]([1-9]|10))";
+
+        if(!(input.matches(regExp1))) validateStr = "Error! You entered the wrong coordinates! Try again:";
+
     }
 
+    protected String shotInputCheck(String shotInput){
+        String regExp1 = "([A-J]([1-9)]|10))";
+//        System.out.println("Shot input check: " + (shotInput.matches(regExp1)));
+        if(!(shotInput.matches(regExp1))) {
+            validateStr = "Error! You entered the wrong coordinates! Try again:";
+        }else {
+            validateStr = "OK";
+        }
+        return validateStr;
+
+    }
     private void setProperOrderInput() {
         String[] coord = input.split(" ");
         String startCoord = coord[0];

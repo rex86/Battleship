@@ -36,6 +36,7 @@ public class Battleship {
         this.size = ship.getShipSize();
         this.denote = denote;
         this.name = ship.name();
+        this.attackedNum = 0;
     }
 
     public int getSize() {
@@ -71,7 +72,7 @@ public class Battleship {
     }
 
     public void setAttacked() {
-        this.attackedNum += attackedNum;
+        this.attackedNum ++;
         isDestroyed = (this.attackedNum == this.size)?true:false;
     }
 
