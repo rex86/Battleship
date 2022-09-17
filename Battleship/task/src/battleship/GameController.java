@@ -1,19 +1,26 @@
 package battleship;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class GameController {
     private static Battleship [] battleships = new Battleship[5];
+    private static Table table = new Table(10,10);
+    private static String fullQuestion = "";
+    private static String userInput = "";
+    private static String validateStr=" ";
+    private static Validating validating = new Validating();
+
+    private static int index = 0;
+
+
     public static void start(){
 
-        String templateQuestion = "Enter the coordinates of the ";
-        String fullQuestion = "";
-        String userInput = "";
-        String validateStr=" ";
 
-        Validating validating = new Validating();
+        String templateQuestion = "Enter the coordinates of the ";
+
+
         Battleship battleship;
-        Table table = new Table(10,10);
 
         int i = 0;
         for (Ships ship:Ships.values()) {
@@ -36,50 +43,57 @@ public class GameController {
             table.addBattleShip(validating.getInput(),battleship);
 
         }
-
         table.showTable();
         System.out.println();
+        startGame();
+
+    }
+
+    private static boolean allShipDestroyed(){
+
+        boolean isAircraftDestroyed = battleships[0]==null?true:false;
+        boolean isBattleshipDestroyed = battleships[1]==null?true:false;
+        boolean isSubmarineDestroyed = battleships[2]==null?true:false;
+        boolean isCruiserDestroyed = battleships[3]==null?true:false;
+        boolean isDestroyerDestroyed = battleships[4]==null?true:false;;
+
+
+//        int numOfBattleship = 1;
+//        for (Battleship item: battleships) {
+////            System.out.println(item.getName() + " has been attacked " + item.getAttackedNum());
+//            if(item.isDestroyed()) {
+//                ++numOfBattleship;
+//                Asker.userInput("You sank a ship! Specify a new target:\n");
+//            }
+//        }
+        return isAircraftDestroyed &&
+                isBattleshipDestroyed &&
+                isSubmarineDestroyed &&
+                isCruiserDestroyed &&
+                isDestroyerDestroyed;
+
+//        return numOfBattleship == 5;
+    }
+
+    private static void startGame(){
+
+        fullQuestion = "Take a shot!\n";
         System.out.println("The game starts!\n");
         table.hideTable();
-
-//        do{
-
-            System.out.println();
-            fullQuestion = "Take a shot!\n";
-//        do{
-//            userInput = Asker.userInput(fullQuestion);
-////            validateStr = validating.validateAll();
-//            validateStr = validating.shotInputCheck(userInput);
-//            fullQuestion = validateStr;
-//
-//        }while (!validateStr.equals("OK"));
-
-//        System.out.println("USER input: " + userInput);
-//        if(validateStr.equals("OK")){
-//        System.out.println(table.changeTableMissOrHit(userInput));
-
         String responseStr = "";
-        String scannerInput = "";
-        while (Asker.scanner.hasNextLine()){
-            scannerInput = Asker.scanner.nextLine();
+        do{
+            userInput = Asker.userInput(fullQuestion);
+            validateStr = validating.shotInputCheck(userInput);
 
-
-            do{
-                userInput = Asker.userInput(fullQuestion);
-//            validateStr = validating.validateAll();
-                validateStr = validating.shotInputCheck(userInput);
-
-
-
-
+            if(validateStr.equals("OK")){
+//                System.out.println("Index: " + index++);
+                System.out.println();
                 String inp = table.changeTableMissOrHit(userInput);
-//        System.out.println("INP: " + inp);
+//                System.out.println("INP: " + inp);
                 if (inp.equals("MISS")) {
-//                    table.showTable();
                     System.out.println();
                     table.hideTable();
-                    responseStr = "You missed!";
-//                System.out.println("You missed!");
+                    responseStr = "You missed.";
 
                 } else if (inp.equals("HIT")) {
 //                    table.showTable();
@@ -87,43 +101,51 @@ public class GameController {
                     responseStr = "You hit a ship!";
 //                System.out.println("You hit a ship!");
 //                System.out.println(table.getBattleshipByCoord(battleships,userInput).getName());
-                    if (table.getBattleshipByCoord(battleships, userInput) != null) {
+
+                    if (table.getBattleshipByCoord(battleships, userInput) != null && !inp.equals("FAKEHIT")) {
                         table.getBattleshipByCoord(battleships, userInput).setAttacked();
+
 //                    System.out.println("Ship attacked "+table.getBattleshipByCoord(battleships,userInput).getName());
                         System.out.println();
                     }
 
+                }else if (inp.equals("FAKEHIT")){
+                    table.hideTable();
+                    responseStr = "You hit a ship!";
                 }
-                fullQuestion = responseStr + " Try again:";
-                userInput = Asker.userInput(fullQuestion);
+//                table.hideTable();
+                if(table.getBattleshipByCoord(battleships, userInput) != null && table.getBattleshipByCoord(battleships, userInput).isDestroyed()){
+                    fullQuestion = "You sank a ship! Specify a new target";
+                    battleships[findIndexOfBattleship(table.getBattleshipByCoord(battleships, userInput))] = null;
+
+                }else {
+                    fullQuestion = responseStr + " Try again:";
+                }
+
+//                userInput = Asker.userInput(fullQuestion);
                 System.out.println();
-                table.hideTable();
+//                table.hideTable();
+
+            }else{
+                System.out.println(validateStr);
+            }
 
 //            table.showTable();
-            }while (!allShipDestroyed() && validateStr.equals("OK"));
-        }
-
-
+        }while (!allShipDestroyed());
 
         System.out.println("You sank the last ship. You won. Congratulations!");
-//        }while (!validateStr.equals("OK"));
-        System.out.println();
-
-
     }
 
-    private static boolean allShipDestroyed(){
+    private static int findIndexOfBattleship(Battleship battleship){
+        int index = 0;
 
-        int numOfBattleship = 1;
-        for (Battleship item: battleships) {
-            System.out.println(item.getName() + " has been attacked " + item.getAttackedNum());
-            if(item.isDestroyed()) {
-                ++numOfBattleship;
-                Asker.userInput("You sank a ship! Specify a new target:\n");
-            }
+            for (int i=0;i<battleships.length;i++) {
+                if(battleship.equals(battleships[i])) index = i;
+
+
         }
-        System.out.println("numOfBattleship: "+numOfBattleship);
-        return numOfBattleship == 5;
+
+        return index;
     }
 
 }

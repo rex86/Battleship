@@ -237,17 +237,22 @@ public class Table {
         int rowNumber = getArrayIndexFromChar(input.charAt(0));
         int columnNum = Integer.parseInt(input.substring(1, range)) - 1;
 
+        //because of task description, previous hit or miss
         boolean hit = table[rowNumber][columnNum].equals("O");
-        boolean miss = table[rowNumber][columnNum].equals("~");
+        boolean miss = table[rowNumber][columnNum].equals("~") || table[rowNumber][columnNum].equals("M");
+        boolean fakeHit = table[rowNumber][columnNum].equals("X");
 
         String result="";
-
+//        System.out.println(rowNumber + " - " + columnNum);
         if (hit) {
             table[rowNumber][columnNum] = TableSymbols.HIT.getSymbol();
             result = "HIT";
         } else if (miss) {
             table[rowNumber][columnNum] = TableSymbols.MISS.getSymbol();
             result = "MISS";
+        } else if (fakeHit){
+            table[rowNumber][columnNum] = TableSymbols.HIT.getSymbol();
+            result = "FAKEHIT";
         }
 //        System.out.println("RESULT: " + result);
         return result;
@@ -279,6 +284,7 @@ public class Table {
         int columnNum = Integer.parseInt(coord.substring(1, range));
         Battleship hasShip;
         for (Battleship battleship:battleships) {
+            if(battleship == null) continue;
             for (int[] item :battleship.getCoordinates()) {
 //                System.out.println("INNER item: "+item[0] + " - " + item[1] +"-->"+rowNumber + " - " + columnNum );
                 if(item[0] == rowNumber && item[1] == columnNum){
