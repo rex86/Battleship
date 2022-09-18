@@ -4,7 +4,7 @@ public enum TableSymbols {
     UNTOUCHED("~"), // ~
     HIT("X"),       // x
     MISS("M")       // m
-            ;
+    ;
 
     private final String symbol;
 

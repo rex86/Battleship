@@ -12,27 +12,9 @@ public class Battleship {
     private char denote; // 'O' char
     private boolean isDestroyed;
 
-    private byte attackedNum; //melyik részét érte a támadás
+    private byte attackedNum;
 
     public Battleship(Ships ship, char denote) {
-//
-//        switch (ship){
-//            case AircraftCarrier:
-//                this.size = 5;
-//                break;
-//            case Battleship:
-//                this.size = 4;
-//                break;
-//            case Submarine:
-//
-//            case Cruiser:
-//                this.size = 3;
-//                break;
-//
-//            case Destroyer:
-//                this.size = 2;
-//                break;
-//        }
         this.size = ship.getShipSize();
         this.denote = denote;
         this.name = ship.name();
@@ -42,8 +24,6 @@ public class Battleship {
     public int getSize() {
         return size;
     }
-
-
 
     public int[][] getCoordinates() {
         return coordinates;
@@ -66,14 +46,13 @@ public class Battleship {
         return isDestroyed;
     }
 
-
     public byte getAttackedNum() {
         return attackedNum;
     }
 
     public void setAttacked() {
-        this.attackedNum ++;
-        isDestroyed = (this.attackedNum == this.size)?true:false;
+        this.attackedNum++;
+        isDestroyed = (this.attackedNum == this.size) ? true : false;
     }
 
 }
