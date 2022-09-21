@@ -297,10 +297,10 @@ files:
 - name: src/battleship/Asker.java
   visible: true
   learner_created: true
-- name: src/battleship/Validating.java
+- name: src/battleship/GameController.java
   visible: true
   learner_created: true
-- name: src/battleship/GameController.java
+- name: src/battleship/Validating.java
   visible: true
   learner_created: true
 - name: src/battleship/ArrayMove.java
@@ -308,7 +308,4 @@ files:
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/10594#comment
 status: Solved
-feedback:
-  message: Congratulations!
-  time: Sat, 10 Sep 2022 11:51:23 UTC
 record: 1

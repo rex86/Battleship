@@ -443,15 +443,15 @@ files:
     import java.util.Scanner;
 
     public class GameController {
-        private static Battleship [] battleships = new Battleship[5];
-        public static void start(){
 
+        public static void start(){
             String templateQuestion = "Enter the coordinates of the ";
             String fullQuestion = "";
             String userInput = "";
             String validateStr=" ";
 
             Validating validating = new Validating();
+            Battleship [] battleships = new Battleship[5];
             Battleship battleship;
             Table table = new Table(10,10);
 
@@ -486,56 +486,32 @@ files:
 
                 System.out.println();
                 fullQuestion = "Take a shot!\n";
-    //        do{
-    //            userInput = Asker.userInput(fullQuestion);
-    ////            validateStr = validating.validateAll();
-    //            validateStr = validating.shotInputCheck(userInput);
-    //            fullQuestion = validateStr;
-    //
-    //        }while (!validateStr.equals("OK"));
+            do{
+                userInput = Asker.userInput(fullQuestion);
+    //            validateStr = validating.validateAll();
+                validateStr = validating.shotInputCheck(userInput);
+                fullQuestion = validateStr;
+
+            }while (!validateStr.equals("OK"));
 
     //        System.out.println("USER input: " + userInput);
     //        if(validateStr.equals("OK")){
     //        System.out.println(table.changeTableMissOrHit(userInput));
-
-            String responseStr = "";
-            do{
-    //            userInput = Asker.userInput(fullQuestion);
-    //            validateStr = validating.validateAll();
-                validateStr = validating.shotInputCheck(userInput);
-
-
-
-                        String inp = table.changeTableMissOrHit(userInput);
+            String inp = table.changeTableMissOrHit(userInput);
     //        System.out.println("INP: " + inp);
-                        if (inp.equals("MISS")) {
+                    if(inp.equals("MISS")){
     //                    table.showTable();
-                            System.out.println();
-                            table.hideTable();
-                            responseStr = "You missed!";
-    //                System.out.println("You missed!");
-
-                        } else if (inp.equals("HIT")) {
-    //                    table.showTable();
-                            table.hideTable();
-                            responseStr = "You hit a ship!";
-    //                System.out.println("You hit a ship!");
-    //                System.out.println(table.getBattleshipByCoord(battleships,userInput).getName());
-                            if (table.getBattleshipByCoord(battleships, userInput) != null) {
-                                table.getBattleshipByCoord(battleships, userInput).setAttacked();
-    //                    System.out.println("Ship attacked "+table.getBattleshipByCoord(battleships,userInput).getName());
-                                System.out.println();
-                            }
-
-                        }
-                        fullQuestion = responseStr + " Try again:";
-                        userInput = Asker.userInput(fullQuestion);
                         System.out.println();
                         table.hideTable();
+                        System.out.println("You missed!");
 
-    //            table.showTable();
-                }while (!allShipDestroyed() && validateStr.equals("OK"));
-
+                    } else if(inp.equals("HIT")) {
+    //                    table.showTable();
+                        table.hideTable();
+                        System.out.println("You hit a ship!");
+                    }
+            System.out.println();
+            table.showTable();
 
     //        }while (!validateStr.equals("OK"));
             System.out.println();
@@ -543,141 +519,286 @@ files:
 
         }
 
-        private static boolean allShipDestroyed(){
-
-            int numOfBattleship = 1;
-            for (Battleship item: battleships) {
-                System.out.println(item.getName() + " has been attacked " + item.getAttackedNum());
-                if(item.isDestroyed()) {
-                    ++numOfBattleship;
-                    Asker.userInput("You sank a ship! Specify a new target:\n");
-                }
-            }
-            System.out.println("numOfBattleship: "+numOfBattleship);
-            return numOfBattleship == 5;
-        }
 
     }
   learner_created: true
 - name: src/battleship/Table.java
   visible: true
-  text: "package battleship;\n\nimport java.util.Arrays;\n\npublic class Table {\n\
-    \n\n    public String[][] getTable() {\n        return table;\n    }\n\n    private\
-    \ String[][] table;\n    private TableSymbols denote; // '~','M','X'..\n\n   \
-    \ boolean row = false;\n\n//    @Override\n//    public String toString() {\n\
-    //        return table[0][];\n//    }\n\n    boolean column = false;\n\n    public\
-    \ Table(int sizeX, int sizeY) {\n        this.table = new String[sizeX][sizeY];\n\
-    \        initTable();\n//        inputValidation(\"A1 A5\");\n//        addBattleShip(\"\
-    A2 A6\",denote);\n\n\n    }\n\n    public void showTable() {\n        header(this.table[0].length);\n\
-    \        body();\n    }\n\n    private void header(int number) {\n        System.out.print(\"\
-    \  \");\n        for (int i = 1; i <= number; i++) {\n            System.out.print(\"\
-    \ \" + i);\n        }\n        System.out.println();\n    }\n\n    private void\
-    \ body() {\n        for (int i = 0; i < this.table.length; i++) {\n          \
-    \  System.out.print(\" \" + ((char) (i + 65)));\n            for (int j = 0; j\
-    \ < table[0].length; j++) {\n                System.out.print(\" \" + table[i][j]);\n\
-    \            }\n            System.out.println();\n        }\n\n    }\n\n    private\
-    \ void initTable() {\n        for (int i = 0; i < table.length; i++) {\n     \
-    \       for (int j = 0; j < table[0].length; j++) {\n                table[i][j]\
-    \ = TableSymbols.UNTOUCHED.getSymbol();\n            }\n        }\n    }\n\n \
-    \   protected void addBattleShip(String coordinate, Battleship battleship) {\n\
-    \        // F3 F7 koordináta leképzése\n        // sor - egyezik az 1.char\n \
-    \       // oszlop - egyezik a 2.char\n        //amelyik nem egyezik az meg nö\
-    vekszik\n        // 1.char-t átalakítani tömbös indexé, int rowNumber = (char)\
-    \ 'A'-65;\n        // 2.dim tömbbe eltárolni a hajó koordinátáit (Battleship-ben\
-    \ is van ilyen, setCoordinate?)\n\n        String[] coordinates = coordinate.split(\"\
-    \ \");\n        int rowSecNum = Integer.parseInt(coordinates[0].substring(1, 2));\n\
-    \n        int range = coordinates[0].length() == 2?2:3; //because of F9 F10 +char\n\
-    \        int rowFirstNum = Integer.parseInt(coordinates[0].substring(1, range));\n\
-    \n        row = coordinates[0].substring(0, 1).equals(coordinates[1].substring(0,\
-    \ 1));\n        column = coordinates[0].substring(1, 2).equals(coordinates[1].substring(1,\
-    \ 2));\n        int rowNumber = 0;\n        int columnNumber = 0;\n//        rowNumber\
-    \ = (char) 'A'-65;\n        rowNumber = getArrayIndexFromChar(coordinates[0].charAt(0));\n\
-    \        columnNumber = getArrayIndexFromChar(coordinates[0].charAt(0));\n\n \
-    \       int[][] shipCoordinate = new int[battleship.getSize()][2];\n        int\
-    \ index = rowSecNum;\n        if (row) {\n\n            for (int i = 0; i < shipCoordinate.length;\
-    \ i++) {\n                shipCoordinate[i][1] = index++;\n                shipCoordinate[i][0]\
-    \ = rowNumber;\n\n            }\n\n        } else if (column) {\n            for\
-    \ (int i = 0; i < shipCoordinate.length; i++) {\n                shipCoordinate[i][0]\
-    \ = rowNumber++;\n                shipCoordinate[i][1] = rowFirstNum;\n\n    \
-    \        }\n        }\n\n//        for (int[] items: shipCoordinate) {\n//   \
-    \         for (int item:items) {\n//                System.out.print(item + \"\
-    \ \");\n//            }\n//            System.out.println();\n//        }\n\n\
-    \        //save and update table array\n        battleship.setCoordinates(shipCoordinate);\n\
-    \        modifyTableCoordinate(battleship);\n\n//        for (int i = 0; i < table.length;\
-    \ i++) {\n//            for (int j = 0; j < table[0].length; j++) {\n//      \
-    \          table[i][j] = denote.UNTOUCHED.getSymbol();\n//            }\n//  \
-    \      }\n    }\n\n    private int getArrayIndexFromChar(char character) {\n \
-    \       return character - 65;\n    }\n\n\n//    private void setCoordinateToTable()\
-    \ {\n//        int[][] shipCoordinate = battleship.getCoordinates();\n//     \
-    \   for (int i = 0; i < shipCoordinate.length; i++) {\n//            for (int\
-    \ j = 0; j < shipCoordinate.length; j++) {\n//\n////                shipCoordinate[i][j]\
-    \ = table[i][j];\n//\n//            }\n//        }\n//    }\n\n    protected void\
-    \ modifyTableCoordinate(Battleship battleship) {\n        int[][] shipCoordinate\
-    \ = battleship.getCoordinates();\n\n//        table[][] = shipCoordinate[][]\n\
-    \n        for (int i = 0; i < shipCoordinate.length; i++) {\n            for (int\
-    \ j = 0; j < shipCoordinate.length; j++) {\n//                System.out.println(shipCoordinate[i][0]\
-    \ + \" - \" + shipCoordinate[i][1]);\n                table[shipCoordinate[i][0]][shipCoordinate[i][1]-1]\
-    \ = \"O\";\n            }\n\n        }\n    }\n\n    protected boolean inputValidation(String\
-    \ input){\n\n//        System.out.println(\"B10 B10\".matches(\"([A-J]([1-9)]|10))\\\
-    s([A-J]([1-9]|10))\"));\n        String regExp = \"([A-J]([1-9)]|10))\\s([A-J]([1-9]|10))\"\
-    ;\n        boolean inputVal = input.matches(regExp);\n        if(inputVal){\n\n\
-    \            String [] coord = input.split(\" \");\n            String startCoord\
-    \   = coord[0];\n            String endCoord   = coord[1];\n            int x1\
-    \ = getArrayIndexFromChar(startCoord.charAt(0));\n            int y1 = Integer.parseInt(String.valueOf(startCoord.charAt(1)));\n\
-    \n            int x2 = getArrayIndexFromChar(endCoord.charAt(0));\n          \
-    \  int y2 = Integer.parseInt(String.valueOf(endCoord.charAt(1)));\n\n//      \
-    \      System.out.println(x1+\" \"+y1+\" \"+x2+\" \"+y2);\n\n            //tartomá\
-    ny ellenőrzés sor ill oszlop esetén\n//            System.out.println(\"Order:\
-    \ \" + getProperOrderInput(input));\n        } else if (inputVal && !row && !column)\
-    \ {\n            System.out.println(\"Error! Wrong ship location! Try again:\"\
-    );\n        }\n\n        return false;\n    }\n    protected String getProperOrderInput(String\
-    \ input){\n\n        String [] coord = input.split(\" \");\n        String startCoord\
-    \   = coord[0];\n        String endCoord   = coord[1];\n\n        String orderedInput=\"\
-    \";\n        int startCoorNum=Integer.parseInt(startCoord.substring(1,2));\n \
-    \       int endCoorNum=Integer.parseInt(endCoord.substring(1,2));\n\n        int\
-    \ startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));\n        int endColumnNum\
-    \ = getArrayIndexFromChar(endCoord.charAt(0));\n\n        if(row && (endCoorNum<startCoorNum)){\n\
-    \            orderedInput = endCoord +\" \"+startCoord;\n        }else if(column\
-    \ && (endColumnNum<startColumnNum)) {\n            orderedInput = endCoord +\"\
-    \ \"+startCoord;\n        }else {\n            orderedInput = input;\n       \
-    \ }\n        return orderedInput;\n    }\n\n    protected int lengthOfGivenCoordinate(String\
-    \ input){\n        int sum=0;\n        String orderedInput=getProperOrderInput(input);\n\
-    \n        String [] coord = orderedInput.split(\" \");\n        String startCoord\
-    \   = coord[0];\n        String endCoord   = coord[1];\n\n\n        int startCoorNum=Integer.parseInt(startCoord.substring(1,2));\n\
-    \        int endCoorNum=Integer.parseInt(endCoord.substring(1,2));\n\n       \
-    \ int startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));\n        int\
-    \ endColumnNum = getArrayIndexFromChar(endCoord.charAt(0));\n\n        if(row){\n\
-    \            sum = endCoorNum - startCoorNum;\n        }\n        else if(column){\n\
-    \            sum = endColumnNum - startColumnNum;\n        }\n        return sum+1;\n\
-    \    }\n    public boolean isRow() {\n        return row;\n    }\n\n    public\
-    \ boolean isColumn() {\n        return column;\n    }\n\n    public String changeTableMissOrHit(String\
-    \ input) {\n\n\n        int range = input.length() == 2 ? 2 : 3; //because of\
-    \ F9 F10 +char\n        int rowNumber = getArrayIndexFromChar(input.charAt(0));\n\
-    \        int columnNum = Integer.parseInt(input.substring(1, range)) - 1;\n\n\
-    \        boolean hit = table[rowNumber][columnNum].equals(\"O\");\n        boolean\
-    \ miss = table[rowNumber][columnNum].equals(\"~\");\n\n        String result=\"\
-    \";\n\n        if (hit) {\n            table[rowNumber][columnNum] = TableSymbols.HIT.getSymbol();\n\
-    \            result = \"HIT\";\n        } else if (miss) {\n            table[rowNumber][columnNum]\
-    \ = TableSymbols.MISS.getSymbol();\n            result = \"MISS\";\n        }\n\
-    //        System.out.println(\"RESULT: \" + result);\n        return result;\n\
-    \n    }\n\n    protected void hideTable() {\n        header(this.table[0].length);\n\
-    \        for (int i = 0; i < this.table.length; i++) {\n            System.out.print(\"\
-    \ \" + ((char) (i + 65)));\n            for (int j = 0; j < table[0].length; j++)\
-    \ {\n                if(table[i][j].equals(\"O\")){\n                    System.out.print(\"\
-    \ \" + TableSymbols.UNTOUCHED.getSymbol());\n\n                }else{\n      \
-    \              System.out.print(\" \"+table[i][j]);\n                }\n\n   \
-    \         }\n            System.out.println();\n        }\n\n    }\n    \n   \
-    \ protected Battleship getBattleshipByCoord(Battleship[] battleships, String coord){\n\
-    \n        int range = coord.length() == 2 ? 2 : 3; //because of F9 F10 +char\n\
-    \        int rowNumber = getArrayIndexFromChar(coord.charAt(0));\n        int\
-    \ columnNum = Integer.parseInt(coord.substring(1, range));\n        Battleship\
-    \ hasShip;\n        for (Battleship battleship:battleships) {\n            for\
-    \ (int[] item :battleship.getCoordinates()) {\n//                System.out.println(\"\
-    INNER item: \"+item[0] + \" - \" + item[1] +\"-->\"+rowNumber + \" - \" + columnNum\
-    \ );\n                if(item[0] == rowNumber && item[1] == columnNum){\n//  \
-    \                  System.out.println(\"getBsByCoord: \" + battleship.getName());\n\
-    \                    return battleship;\n                }\n            }\n\n\
-    \        }\n        return null;\n    }\n}\n"
+  text: |
+    package battleship;
+
+    import java.util.Arrays;
+
+    public class Table {
+
+
+        public String[][] getTable() {
+            return table;
+        }
+
+        private String[][] table;
+        private TableSymbols denote; // '~','M','X'..
+
+        boolean row = false;
+
+    //    @Override
+    //    public String toString() {
+    //        return table[0][];
+    //    }
+
+        boolean column = false;
+
+        public Table(int sizeX, int sizeY) {
+            this.table = new String[sizeX][sizeY];
+            initTable();
+    //        inputValidation("A1 A5");
+    //        addBattleShip("A2 A6",denote);
+
+
+        }
+
+        public void showTable() {
+            header(this.table[0].length);
+            body();
+        }
+
+        private void header(int number) {
+            System.out.print("  ");
+            for (int i = 1; i <= number; i++) {
+                System.out.print(" " + i);
+            }
+            System.out.println();
+        }
+
+        private void body() {
+            for (int i = 0; i < this.table.length; i++) {
+                System.out.print(" " + ((char) (i + 65)));
+                for (int j = 0; j < table[0].length; j++) {
+                    System.out.print(" " + table[i][j]);
+                }
+                System.out.println();
+            }
+
+        }
+
+        private void initTable() {
+            for (int i = 0; i < table.length; i++) {
+                for (int j = 0; j < table[0].length; j++) {
+                    table[i][j] = TableSymbols.UNTOUCHED.getSymbol();
+                }
+            }
+        }
+
+        protected void addBattleShip(String coordinate, Battleship battleship) {
+            // F3 F7 koordináta leképzése
+            // sor - egyezik az 1.char
+            // oszlop - egyezik a 2.char
+            //amelyik nem egyezik az meg növekszik
+            // 1.char-t átalakítani tömbös indexé, int rowNumber = (char) 'A'-65;
+            // 2.dim tömbbe eltárolni a hajó koordinátáit (Battleship-ben is van ilyen, setCoordinate?)
+
+            String[] coordinates = coordinate.split(" ");
+            int rowSecNum = Integer.parseInt(coordinates[0].substring(1, 2));
+
+            int range = coordinates[0].length() == 2?2:3; //because of F9 F10 +char
+            int rowFirstNum = Integer.parseInt(coordinates[0].substring(1, range));
+
+            row = coordinates[0].substring(0, 1).equals(coordinates[1].substring(0, 1));
+            column = coordinates[0].substring(1, 2).equals(coordinates[1].substring(1, 2));
+            int rowNumber = 0;
+            int columnNumber = 0;
+    //        rowNumber = (char) 'A'-65;
+            rowNumber = getArrayIndexFromChar(coordinates[0].charAt(0));
+            columnNumber = getArrayIndexFromChar(coordinates[0].charAt(0));
+
+            int[][] shipCoordinate = new int[battleship.getSize()][2];
+            int index = rowSecNum;
+            if (row) {
+
+                for (int i = 0; i < shipCoordinate.length; i++) {
+                    shipCoordinate[i][1] = index++;
+                    shipCoordinate[i][0] = rowNumber;
+
+                }
+
+            } else if (column) {
+                for (int i = 0; i < shipCoordinate.length; i++) {
+                    shipCoordinate[i][0] = rowNumber++;
+                    shipCoordinate[i][1] = rowFirstNum;
+
+                }
+            }
+
+    //        for (int[] items: shipCoordinate) {
+    //            for (int item:items) {
+    //                System.out.print(item + " ");
+    //            }
+    //            System.out.println();
+    //        }
+
+            //save and update table array
+            battleship.setCoordinates(shipCoordinate);
+            modifyTableCoordinate(battleship);
+
+    //        for (int i = 0; i < table.length; i++) {
+    //            for (int j = 0; j < table[0].length; j++) {
+    //                table[i][j] = denote.UNTOUCHED.getSymbol();
+    //            }
+    //        }
+        }
+
+        private int getArrayIndexFromChar(char character) {
+            return character - 65;
+        }
+
+
+    //    private void setCoordinateToTable() {
+    //        int[][] shipCoordinate = battleship.getCoordinates();
+    //        for (int i = 0; i < shipCoordinate.length; i++) {
+    //            for (int j = 0; j < shipCoordinate.length; j++) {
+    //
+    ////                shipCoordinate[i][j] = table[i][j];
+    //
+    //            }
+    //        }
+    //    }
+
+        protected void modifyTableCoordinate(Battleship battleship) {
+            int[][] shipCoordinate = battleship.getCoordinates();
+
+    //        table[][] = shipCoordinate[][]
+
+            for (int i = 0; i < shipCoordinate.length; i++) {
+                for (int j = 0; j < shipCoordinate.length; j++) {
+    //                System.out.println(shipCoordinate[i][0] + " - " + shipCoordinate[i][1]);
+                    table[shipCoordinate[i][0]][shipCoordinate[i][1]-1] = "O";
+                }
+
+            }
+        }
+
+        protected boolean inputValidation(String input){
+
+    //        System.out.println("B10 B10".matches("([A-J]([1-9)]|10))\s([A-J]([1-9]|10))"));
+            String regExp = "([A-J]([1-9)]|10))\s([A-J]([1-9]|10))";
+            boolean inputVal = input.matches(regExp);
+            if(inputVal){
+
+                String [] coord = input.split(" ");
+                String startCoord   = coord[0];
+                String endCoord   = coord[1];
+                int x1 = getArrayIndexFromChar(startCoord.charAt(0));
+                int y1 = Integer.parseInt(String.valueOf(startCoord.charAt(1)));
+
+                int x2 = getArrayIndexFromChar(endCoord.charAt(0));
+                int y2 = Integer.parseInt(String.valueOf(endCoord.charAt(1)));
+
+    //            System.out.println(x1+" "+y1+" "+x2+" "+y2);
+
+                //tartomány ellenőrzés sor ill oszlop esetén
+    //            System.out.println("Order: " + getProperOrderInput(input));
+            } else if (inputVal && !row && !column) {
+                System.out.println("Error! Wrong ship location! Try again:");
+            }
+
+            return false;
+        }
+        protected String getProperOrderInput(String input){
+
+            String [] coord = input.split(" ");
+            String startCoord   = coord[0];
+            String endCoord   = coord[1];
+
+            String orderedInput="";
+            int startCoorNum=Integer.parseInt(startCoord.substring(1,2));
+            int endCoorNum=Integer.parseInt(endCoord.substring(1,2));
+
+            int startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));
+            int endColumnNum = getArrayIndexFromChar(endCoord.charAt(0));
+
+            if(row && (endCoorNum<startCoorNum)){
+                orderedInput = endCoord +" "+startCoord;
+            }else if(column && (endColumnNum<startColumnNum)) {
+                orderedInput = endCoord +" "+startCoord;
+            }else {
+                orderedInput = input;
+            }
+            return orderedInput;
+        }
+
+        protected int lengthOfGivenCoordinate(String input){
+            int sum=0;
+            String orderedInput=getProperOrderInput(input);
+
+            String [] coord = orderedInput.split(" ");
+            String startCoord   = coord[0];
+            String endCoord   = coord[1];
+
+
+            int startCoorNum=Integer.parseInt(startCoord.substring(1,2));
+            int endCoorNum=Integer.parseInt(endCoord.substring(1,2));
+
+            int startColumnNum = getArrayIndexFromChar(startCoord.charAt(0));
+            int endColumnNum = getArrayIndexFromChar(endCoord.charAt(0));
+
+            if(row){
+                sum = endCoorNum - startCoorNum;
+            }
+            else if(column){
+                sum = endColumnNum - startColumnNum;
+            }
+            return sum+1;
+        }
+        public boolean isRow() {
+            return row;
+        }
+
+        public boolean isColumn() {
+            return column;
+        }
+
+        public String changeTableMissOrHit(String input) {
+
+
+            int range = input.length() == 2 ? 2 : 3; //because of F9 F10 +char
+            int rowNumber = getArrayIndexFromChar(input.charAt(0));
+            int columnNum = Integer.parseInt(input.substring(1, range)) - 1;
+
+            boolean hit = table[rowNumber][columnNum].equals("O");
+            boolean miss = table[rowNumber][columnNum].equals("~");
+
+            String result="";
+
+            if (hit) {
+                table[rowNumber][columnNum] = TableSymbols.HIT.getSymbol();
+                result = "HIT";
+            } else if (miss) {
+                table[rowNumber][columnNum] = TableSymbols.MISS.getSymbol();
+                result = "MISS";
+            }
+    //        System.out.println("RESULT: " + result);
+            return result;
+
+        }
+
+        protected void hideTable() {
+            header(this.table[0].length);
+            for (int i = 0; i < this.table.length; i++) {
+                System.out.print(" " + ((char) (i + 65)));
+                for (int j = 0; j < table[0].length; j++) {
+                    if(table[i][j].equals("O")){
+                        System.out.print(" " + TableSymbols.UNTOUCHED.getSymbol());
+
+                    }else{
+                        System.out.print(" "+table[i][j]);
+                    }
+
+                }
+                System.out.println();
+            }
+
+        }
+    }
   learner_created: true
 - name: src/battleship/Validating.java
   visible: true
@@ -1231,7 +1352,6 @@ files:
             this.size = ship.getShipSize();
             this.denote = denote;
             this.name = ship.name();
-            this.attackedNum = 0;
         }
 
         public int getSize() {
@@ -1267,15 +1387,15 @@ files:
         }
 
         public void setAttacked() {
-            this.attackedNum ++;
+            this.attackedNum += attackedNum;
             isDestroyed = (this.attackedNum == this.size)?true:false;
         }
 
     }
   learner_created: true
+- name: src/battleship/Player.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/10597#comment
 status: Solved
-feedback:
-  message: Congratulations!
-  time: Sat, 17 Sep 2022 17:50:16 UTC
-record: 6
+record: 7
