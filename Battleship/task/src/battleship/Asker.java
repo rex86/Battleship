@@ -10,8 +10,10 @@ public final class Asker {
     static String userInput(String question) {
 
         System.out.println(question);
-
-        return scanner.nextLine();
+         return scanner.nextLine();
     }
 
+    public static Scanner getScanner() {
+        return scanner;
+    }
 }

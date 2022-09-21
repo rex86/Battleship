@@ -1,10 +1,11 @@
 package battleship;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 public class GameController {
-//    private static Battleship[] battleships = new Battleship[5];
+    //    private static Battleship[] battleships = new Battleship[5];
 //    private static Battleship[] player2_battleships = new Battleship[5];
     private static Table table = new Table(10, 10);
     private static String fullQuestion = "";
@@ -44,22 +45,23 @@ public class GameController {
         Player p1 = new Player("Player 1");
         Player p2 = new Player("Player 2");
         fillTheGameTable(p1);
-        System.out.println("Press Enter and pass the move to another player\n...");
+//        System.out.println("Press Enter and pass the move to another player\n...");
 //        new Scanner(System.in).nextLine();
-        System.in.read();
+//        promptEnterKey();
         fillTheGameTable(p2);
-        do{
-            showAllTable(p1,p2);
-            startGame(p1,p2);
-            System.out.println("Press Enter and pass the move to another player\n...");
-            System.in.read();
-            showAllTable(p2,p1);
-            startGame(p2,p1);
-            System.out.println("Press Enter and pass the move to another player\n...");
-            System.in.read();
-        }while (!allShipDestroyed(p1) || !allShipDestroyed(p2));
+        do {
+            showAllTable(p1, p2);
+            startGame(p1, p2);
+//            System.out.println("Press Enter and pass the move to another player\n...");
+            showAllTable(p2, p1);
+            startGame(p2, p1);
+//            System.out.println("Press Enter and pass the move to another player\n...");
+//            new Scanner(System.in).next();
+//            promptEnterKey();
+        } while (!allShipDestroyed(p1) || !allShipDestroyed(p2));
 
-            System.out.println("You sank the last ship. You won. Congratulations!");
+
+        System.out.println("You sank the last ship. You won. Congratulations!");
 
 
 //        startGame(p2);
@@ -85,55 +87,62 @@ public class GameController {
 
     private static void startGame(Player player1, Player player2) {
 
-        fullQuestion = "\n"+player1.getName() + ", it's your turn:";
+        fullQuestion = "\n" + player1.getName() + ", it's your turn:";
 //        System.out.println("The game starts!\n");
 //        player.getTable().hideTable();
         String responseStr = "";
 //        do {
-            userInput = Asker.userInput(fullQuestion);
-            validateStr = validating.shotInputCheck(userInput);
+//        promptEnterKey();
+        String userInput = Asker.userInput(fullQuestion);
 
-            if (validateStr.equals("OK")) {
+
+//        userInput = new Scanner(System.in).next(fullQuestion);
+//        System.out.println("XXXX:" + userInput);
+//        if(userInput.isBlank() || userInput.isEmpty() || userInput == null || userInput.equals(" ") || userInput.equals("")){
+//        }
+
+//        userInput = Asker.userInput(fullQuestion);
+        validateStr = validating.shotInputCheck(userInput);
+
+        if (validateStr.equals("OK")) {
 //                System.out.println();
-                String inp = player2.getTable().changeTableMissOrHit(userInput);
-                if (inp.equals("MISS")) {
+            String inp = player2.getTable().changeTableMissOrHit(userInput);
+            if (inp.equals("MISS")) {
 //                    System.out.println();
 //                    player.getTable().hideTable();
-                    responseStr = "You missed.";
+                responseStr = "You missed.";
 
-                } else if (inp.equals("HIT")) {
+            } else if (inp.equals("HIT")) {
 //                    player.getTable().hideTable();
-                    responseStr = "You hit a ship!";
+                responseStr = "You hit a ship!";
 
-                    if (player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput) != null && !inp.equals("FAKEHIT")) {
-                        player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput).setAttacked();
+                if (player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput) != null && !inp.equals("FAKEHIT")) {
+                    player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput).setAttacked();
 //                        System.out.println();
-                    }
+                }
 
-                } else if (inp.equals("FAKEHIT")) {
+            } else if (inp.equals("FAKEHIT")) {
 //                    player.getTable().hideTable();
-                    responseStr = "You hit a ship!";
-                }
-                if (player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput) != null && player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput).isDestroyed()) {
-                    fullQuestion = "You sank a ship! Specify a new target";
-                    player2.getBattleships()[findIndexOfBattleship(player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput),player2)] = null;
-
-                } else {
-                    fullQuestion = responseStr + " Try again:";
-                }
-
-                System.out.println(responseStr);
+                responseStr = "You hit a ship!";
+            }
+            if (player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput) != null && player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput).isDestroyed()) {
+                fullQuestion = "You sank a ship! Specify a new target";
+                player2.getBattleships()[findIndexOfBattleship(player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput), player2)] = null;
 
             } else {
-                System.out.println(validateStr);
+                fullQuestion = responseStr + " Try again:";
             }
 
+            System.out.println(responseStr);
+
+        } else {
+            System.out.println(validateStr);
+        }
+
 //        } while (!allShipDestroyed(player));
-
-
     }
 
-    private static int findIndexOfBattleship(Battleship battleship,Player player) {
+    private static int findIndexOfBattleship(Battleship battleship, Player player) {
         int index = 0;
 
         for (int i = 0; i < player.getBattleships().length; i++) {
@@ -143,7 +152,7 @@ public class GameController {
         return index;
     }
 
-    private static void fillTheGameTable(Player player){
+    private static void fillTheGameTable(Player player) {
         System.out.println(player.getName() + ", place your ships on the game field\n");
         String templateQuestion = "Enter the coordinates of the ";
         Battleship battleship;
@@ -172,9 +181,27 @@ public class GameController {
 
     }
 
-    private static void showAllTable(Player player1, Player player2){
+    private static void showAllTable(Player player1, Player player2) {
         player2.getTable().hideTable();
         System.out.println("----------------------");
         player1.getTable().showTable();
+    }
+
+    public static void promptEnterKey() {
+        System.out.print("Press Enter and pass the move to another player");
+
+        try {
+              System.in.read();
+//            Asker.getScanner().next();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void enterToCont() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.printf("%nPress Enter and pass the move to another player");
+        scanner.nextLine();
     }
 }

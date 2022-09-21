@@ -519,8 +519,14 @@ files:
             Battleship [] battleships = new Battleship[5];
             Battleship battleship;
             Table table = new Table(10,10);
+    //        int[] startCoord = new int[]{9, 0};
+    //        ArrayMove arrayMove = new ArrayMove(table.getTable(),startCoord);
+    //        System.out.println(arrayMove.move("DOWN"));
+    ////        arrayMove.move("RIGHT");
+    //
+    //
+    //        System.out.println(arrayMove);
 
-            int i = 0;
             for (Ships ship:Ships.values()) {
                 table.showTable();
                 System.out.println();
@@ -532,7 +538,6 @@ files:
                     validating = new Validating(userInput, battleship,table);
                     validateStr = validating.validateAll();
                     if(!validateStr.equals("OK")) System.out.println(validateStr+"\n");
-                    battleships[i++] = battleship;
                 }while (!validateStr.equals("OK"));
 
                 table.addBattleShip(validating.getInput(),battleship);
@@ -540,9 +545,6 @@ files:
             }
 
             table.showTable();
-            System.out.println("The game starts!\n");
-            table.showTable();
-            System.out.println(battleships);
         }
 
 
@@ -833,10 +835,6 @@ files:
             validateStr = "Error! You placed it too close to another one. Try again:";
 
         }
-        private void inputCheck(){
-            String regExp = "([A-J]([1-9)]|10))\s([A-J]([1-9]|10))";
-            if(!input.matches(regExp)) validateStr = "Error! You entered the wrong coordinates! Try again:";
-        }
 
         private void setProperOrderInput() {
             String[] coord = input.split(" ");
@@ -872,7 +870,6 @@ files:
 
         public String validateAll() {
             setProperOrderInput();
-            inputCheck();
             sizeCheck();
             rowColumnCheck();
             arrangeCheck();
@@ -1367,4 +1364,7 @@ files:
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/10595#comment
 status: Solved
-record: 3
+feedback:
+  message: Congratulations!
+  time: Wed, 14 Sep 2022 20:12:25 UTC
+record: 2
