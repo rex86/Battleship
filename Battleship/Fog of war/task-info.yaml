@@ -1484,4 +1484,7 @@ files:
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/10596#comment
 status: Solved
-record: 5
+feedback:
+  message: Congratulations!
+  time: Thu, 15 Sep 2022 09:14:32 UTC
+record: 4

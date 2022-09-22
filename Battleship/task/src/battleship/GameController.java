@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+
 public class GameController {
     //    private static Battleship[] battleships = new Battleship[5];
 //    private static Battleship[] player2_battleships = new Battleship[5];
@@ -45,16 +46,18 @@ public class GameController {
         Player p1 = new Player("Player 1");
         Player p2 = new Player("Player 2");
         fillTheGameTable(p1);
-//        System.out.println("Press Enter and pass the move to another player\n...");
-//        new Scanner(System.in).nextLine();
-//        promptEnterKey();
+        promptEnterKey();
         fillTheGameTable(p2);
         do {
+            promptEnterKey();
             showAllTable(p1, p2);
             startGame(p1, p2);
-//            System.out.println("Press Enter and pass the move to another player\n...");
+            System.out.println("Press Enter and pass the move to another player");
+            System.out.println("...");
             showAllTable(p2, p1);
             startGame(p2, p1);
+//            System.out.println("Press Enter and pass the move to another player");
+//            System.out.println("...");
 //            System.out.println("Press Enter and pass the move to another player\n...");
 //            new Scanner(System.in).next();
 //            promptEnterKey();
@@ -87,21 +90,25 @@ public class GameController {
 
     private static void startGame(Player player1, Player player2) {
 
-        fullQuestion = "\n" + player1.getName() + ", it's your turn:";
+        fullQuestion = player1.getName() + ", it's your turn:";
 //        System.out.println("The game starts!\n");
 //        player.getTable().hideTable();
         String responseStr = "";
 //        do {
 //        promptEnterKey();
-        String userInput = Asker.userInput(fullQuestion);
+//        String userInput = Asker.userInput(fullQuestion);
 
 
 //        userInput = new Scanner(System.in).next(fullQuestion);
 //        System.out.println("XXXX:" + userInput);
-//        if(userInput.isBlank() || userInput.isEmpty() || userInput == null || userInput.equals(" ") || userInput.equals("")){
-//        }
-
+        Scanner scanner = new Scanner(System.in);
+        String userInput = scanner.nextLine();;
 //        userInput = Asker.userInput(fullQuestion);
+//        if(userInput.isBlank() || userInput.isEmpty() || userInput == null || userInput.equals(" ") || userInput.equals("")){
+//            enterToCont();
+//        }
+//scanner.close();
+//        System.out.println("UI:"+userInput);
         validateStr = validating.shotInputCheck(userInput);
 
         if (validateStr.equals("OK")) {
@@ -155,7 +162,7 @@ public class GameController {
     private static void fillTheGameTable(Player player) {
         System.out.println(player.getName() + ", place your ships on the game field\n");
         String templateQuestion = "Enter the coordinates of the ";
-        Battleship battleship;
+        Battleship battleship=null;
 
         int i = 0;
         for (Ships ship : Ships.values()) {
@@ -165,6 +172,8 @@ public class GameController {
                 fullQuestion = templateQuestion + (ship.name().equals("AircraftCarrier") ? "Aircraft Carrier" : ship) + " (" + ship.getShipSize() + " cells):";
                 userInput = Asker.userInput(fullQuestion); //ha false újrakérdez
                 System.out.println();
+
+                if(userInput.isEmpty() || userInput.isBlank()|| userInput.equals("") || userInput.equals(" ")) continue;
                 battleship = new Battleship(ship, 'X');
                 validating = new Validating(userInput, battleship, player.getTable());
                 validateStr = validating.validateAll();
@@ -172,8 +181,7 @@ public class GameController {
                 if (validateStr.equals("OK")) player.getBattleships()[i++] = battleship;
 
             } while (!validateStr.equals("OK"));
-
-            player.getTable().addBattleShip(validating.getInput(), battleship);
+            if(battleship != null) player.getTable().addBattleShip(validating.getInput(), battleship);
 
         }
         player.getTable().showTable();
@@ -188,11 +196,12 @@ public class GameController {
     }
 
     public static void promptEnterKey() {
-        System.out.print("Press Enter and pass the move to another player");
-
+        System.out.println("Press Enter and pass the move to another player");
+        System.out.println("...");
+//        Asker.getScanner().close();
+//        Asker.getScanner().next();
         try {
-              System.in.read();
-//            Asker.getScanner().next();
+            System.in.read();
 
         } catch (IOException e) {
             e.printStackTrace();
