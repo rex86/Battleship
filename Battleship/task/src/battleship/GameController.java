@@ -6,8 +6,7 @@ import java.util.Scanner;
 
 
 public class GameController {
-    //    private static Battleship[] battleships = new Battleship[5];
-//    private static Battleship[] player2_battleships = new Battleship[5];
+
     private static Table table = new Table(10, 10);
     private static String fullQuestion = "";
     private static String userInput = "";
@@ -19,30 +18,6 @@ public class GameController {
 
     public static void start() throws IOException {
 
-//        String templateQuestion = "Enter the coordinates of the ";
-//        Battleship battleship;
-//
-//        int i = 0;
-//        for (Ships ship : Ships.values()) {
-//            table.showTable();
-//            System.out.println();
-//            do {
-//                fullQuestion = templateQuestion + (ship.name().equals("AircraftCarrier") ? "Aircraft Carrier" : ship) + " (" + ship.getShipSize() + " cells):";
-//                userInput = Asker.userInput(fullQuestion); //ha false újrakérdez
-//                System.out.println();
-//                battleship = new Battleship(ship, 'X');
-//                validating = new Validating(userInput, battleship, table);
-//                validateStr = validating.validateAll();
-//                if (!validateStr.equals("OK")) System.out.println(validateStr + "\n");
-//                if (validateStr.equals("OK")) battleships[i++] = battleship;
-//
-//            } while (!validateStr.equals("OK"));
-//
-//            table.addBattleShip(validating.getInput(), battleship);
-//
-//        }
-//        table.showTable();
-//        System.out.println();
         Player p1 = new Player("Player 1");
         Player p2 = new Player("Player 2");
         fillTheGameTable(p1);
@@ -51,23 +26,15 @@ public class GameController {
         do {
             promptEnterKey();
             showAllTable(p1, p2);
-            startGame(p1, p2);
-            System.out.println("Press Enter and pass the move to another player");
-            System.out.println("...");
+            if(startGame(p1, p2)) break;
+
+            promptEnterKey();
             showAllTable(p2, p1);
-            startGame(p2, p1);
-//            System.out.println("Press Enter and pass the move to another player");
-//            System.out.println("...");
-//            System.out.println("Press Enter and pass the move to another player\n...");
-//            new Scanner(System.in).next();
-//            promptEnterKey();
+            if(startGame(p2, p1)) break;
+
         } while (!allShipDestroyed(p1) || !allShipDestroyed(p2));
 
-
         System.out.println("You sank the last ship. You won. Congratulations!");
-
-
-//        startGame(p2);
 
     }
 
@@ -78,7 +45,6 @@ public class GameController {
         boolean isSubmarineDestroyed = player.getBattleships()[2] == null ? true : false;
         boolean isCruiserDestroyed = player.getBattleships()[3] == null ? true : false;
         boolean isDestroyerDestroyed = player.getBattleships()[4] == null ? true : false;
-        ;
 
         return isAircraftDestroyed &&
                 isBattleshipDestroyed &&
@@ -88,52 +54,30 @@ public class GameController {
 
     }
 
-    private static void startGame(Player player1, Player player2) {
-
+    private static boolean startGame(Player player1, Player player2) {
         fullQuestion = player1.getName() + ", it's your turn:";
-//        System.out.println("The game starts!\n");
-//        player.getTable().hideTable();
         String responseStr = "";
-//        do {
-//        promptEnterKey();
-//        String userInput = Asker.userInput(fullQuestion);
 
-
-//        userInput = new Scanner(System.in).next(fullQuestion);
-//        System.out.println("XXXX:" + userInput);
-        Scanner scanner = new Scanner(System.in);
-        String userInput = scanner.nextLine();;
-//        userInput = Asker.userInput(fullQuestion);
-//        if(userInput.isBlank() || userInput.isEmpty() || userInput == null || userInput.equals(" ") || userInput.equals("")){
-//            enterToCont();
-//        }
-//scanner.close();
-//        System.out.println("UI:"+userInput);
+        userInput = Asker.userInput(fullQuestion);
         validateStr = validating.shotInputCheck(userInput);
 
         if (validateStr.equals("OK")) {
-//                System.out.println();
             String inp = player2.getTable().changeTableMissOrHit(userInput);
             if (inp.equals("MISS")) {
-//                    System.out.println();
-//                    player.getTable().hideTable();
                 responseStr = "You missed.";
 
             } else if (inp.equals("HIT")) {
-//                    player.getTable().hideTable();
                 responseStr = "You hit a ship!";
 
                 if (player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput) != null && !inp.equals("FAKEHIT")) {
                     player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput).setAttacked();
-//                        System.out.println();
                 }
 
             } else if (inp.equals("FAKEHIT")) {
-//                    player.getTable().hideTable();
                 responseStr = "You hit a ship!";
             }
             if (player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput) != null && player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput).isDestroyed()) {
-                fullQuestion = "You sank a ship! Specify a new target";
+                fullQuestion = "You sank a ship!";
                 player2.getBattleships()[findIndexOfBattleship(player2.getTable().getBattleshipByCoord(player2.getBattleships(), userInput), player2)] = null;
 
             } else {
@@ -146,7 +90,10 @@ public class GameController {
             System.out.println(validateStr);
         }
 
-//        } while (!allShipDestroyed(player));
+        if(fullQuestion.equals("You sank a ship!")) System.out.println(fullQuestion);
+        boolean isGameEnd = allShipDestroyed(player1) || allShipDestroyed(player2);
+
+        return isGameEnd;
     }
 
     private static int findIndexOfBattleship(Battleship battleship, Player player) {
@@ -198,8 +145,6 @@ public class GameController {
     public static void promptEnterKey() {
         System.out.println("Press Enter and pass the move to another player");
         System.out.println("...");
-//        Asker.getScanner().close();
-//        Asker.getScanner().next();
         try {
             System.in.read();
 
@@ -208,9 +153,4 @@ public class GameController {
         }
     }
 
-    public static void enterToCont() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.printf("%nPress Enter and pass the move to another player");
-        scanner.nextLine();
-    }
 }
